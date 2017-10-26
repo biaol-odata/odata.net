@@ -14,6 +14,8 @@ namespace Microsoft.OData
     using System.Threading.Tasks;
 #endif
     using MultipartMixed;
+    using System;
+    using System.Diagnostics;
     #endregion Namespaces
 
     /// <summary>
@@ -130,13 +132,36 @@ namespace Microsoft.OData
         /// <summary>
         /// Returns the content type for the MultipartMime Batch format
         /// </summary>
-        /// <param name="mediaType">The specified media type.</param>
+        /// <param name="inMediaType">The specified media type.</param>
         /// <param name="encoding">The specified encoding.</param>
         /// <param name="writingResponse">True if the message writer is being used to write a response.</param>
+        /// <param name="outMediaType">Returned media type.</param>
         /// <returns>The content-id for the format.</returns>
-        internal override string GetContentType(ODataMediaType mediaType, Encoding encoding, bool writingResponse)
+        internal override string GetContentType(ODataMediaType inMediaType, Encoding encoding, bool writingResponse, out ODataMediaType outMediaType)
         {
-            string batchBoundary = ODataMultipartMixedBatchWriterUtils.CreateBatchBoundary(writingResponse);
+            Debug.Assert(inMediaType != null, "GetContentType called with a null mediaType");
+
+            outMediaType = inMediaType;
+            List<KeyValuePair<string, string>> parameters = inMediaType.Parameters != null ? inMediaType.Parameters.ToList() : new List<KeyValuePair<string, string>>();
+            string batchBoundary;
+            // First try to get the batch boundary from the media type
+            List<KeyValuePair<string, string>> boundaryParameters = parameters.Where(p => String.Compare(p.Key, ODataConstants.HttpMultipartBoundary, StringComparison.OrdinalIgnoreCase) == 0).ToList();
+            if (boundaryParameters.Count > 0)
+            {
+                if (boundaryParameters.Count > 1)
+                {
+                    throw new ODataContentTypeException(Strings.MediaTypeUtils_NoOrMoreThanOneContentTypeSpecified(inMediaType.ToText()));
+                }
+
+                batchBoundary = boundaryParameters.First().Value;
+
+            }
+            else
+            {
+                batchBoundary = ODataMultipartMixedBatchWriterUtils.CreateBatchBoundary(writingResponse);
+                parameters.Add(new KeyValuePair<string, string>(ODataConstants.HttpMultipartBoundary, batchBoundary));
+                outMediaType = new ODataMediaType(MimeConstants.MimeMultipartType, MimeConstants.MimeMixedSubType, parameters);
+            }
 
             // Set the content type header here since all headers have to be set before getting the stream
             // Note that the mediaType may have additional parameters, which we ignore here (intentional as per MIME spec).

@@ -829,8 +829,7 @@ namespace Microsoft.OData
                 // Determine the content type and format from the settings. Note that if neither format nor accept headers have been specified in the settings
                 // we fall back to a default (of null accept headers).
                 this.format = MediaTypeUtils.GetContentTypeFromSettings(this.settings, this.writerPayloadKind, this.mediaTypeResolver, out this.mediaType, out this.encoding);
-
-                contentType = format.GetContentType(this.mediaType, this.encoding, this.writingResponse);
+                contentType = format.GetContentType(this.mediaType, this.encoding, this.writingResponse, out this.mediaType);
 
                 if (this.settings.HasJsonPaddingFunction())
                 {
