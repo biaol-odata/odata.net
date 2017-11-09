@@ -3962,6 +3962,7 @@ public enum Microsoft.OData.ODataReaderState : int {
 
 public enum Microsoft.OData.ODataVersion : int {
 	V4 = 0
+	V401 = 1
 }
 
 public enum Microsoft.OData.ServiceLifetime : int {
@@ -4760,6 +4761,8 @@ public sealed class Microsoft.OData.ODataError : Microsoft.OData.ODataAnnotatabl
 	System.Collections.Generic.ICollection`1[[Microsoft.OData.ODataInstanceAnnotation]] InstanceAnnotations  { public get; public set; }
 	string Message  { public get; public set; }
 	string Target  { public get; public set; }
+
+	public virtual string ToString ()
 }
 
 public sealed class Microsoft.OData.ODataErrorDetail {
