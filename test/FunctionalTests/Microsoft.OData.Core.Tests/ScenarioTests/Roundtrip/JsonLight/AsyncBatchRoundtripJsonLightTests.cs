@@ -1219,11 +1219,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Roundtrip.JsonLight
 
         private byte[] ConvertStringToByteArray(string content)
         {
-#if NETCOREAPP1_0
-            var stream = new MemoryStream(System.Text.Encoding.GetEncoding(0).GetBytes(content));
-#else
-            var stream = new MemoryStream(System.Text.Encoding.Default.GetBytes(content));
-#endif
+            var stream = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(content));
             stream.Position = 0;
             return stream.ToArray();
         }
