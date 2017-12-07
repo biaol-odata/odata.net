@@ -183,11 +183,7 @@ namespace Microsoft.OData
             ODataInputContext inputContext)
         {
             Debug.Assert(inputContext != null, "inputContext != null");
-            if (!(inputContext is ODataJsonLightInputContext))
-            {
-                return;
-            }
-            else
+            if (inputContext is ODataJsonLightInputContext)
             {
                 ValidateReferenceUriForJsonBatch(uri, dependsOnRequestIds, inputContext.MessageReaderSettings.BaseUri);
             }
