@@ -270,7 +270,7 @@ namespace Microsoft.OData {
                 return Microsoft.OData.TextRes.GetString(Microsoft.OData.TextRes.ODataWriterCore_CannotWriteTopLevelResourceSetWithResourceWriter);
             }
         }
-        
+
         /// <summary>
         /// A string like "Cannot write a top-level resource with a writer that was created to write a top-level resource set."
         /// </summary>
@@ -1646,6 +1646,14 @@ namespace Microsoft.OData {
         /// </summary>
         internal static string HttpHeaderValueLexer_EndOfFileAfterSeparator(object p0, object p1, object p2, object p3) {
             return Microsoft.OData.TextRes.GetString(Microsoft.OData.TextRes.HttpHeaderValueLexer_EndOfFileAfterSeparator, p0, p1, p2, p3);
+        }
+
+        /// <summary>
+        /// A string like "The value '{0}' is not a valid value for OData token '{1}' in HTTP Prefer or Preference-Applied headers."
+        /// </summary>
+        internal static string HttpPreferenceHeader_InvalidValueForToken(object p0, object p1)
+        {
+            return Microsoft.OData.TextRes.GetString(Microsoft.OData.TextRes.HttpPreferenceHeader_InvalidValueForToken, p0, p1);
         }
 
         /// <summary>
