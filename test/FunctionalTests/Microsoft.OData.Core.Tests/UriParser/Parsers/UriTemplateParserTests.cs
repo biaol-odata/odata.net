@@ -142,6 +142,24 @@ namespace Microsoft.OData.Tests.UriParser.Parsers
         }
 
         [Fact]
+        public void ParseEnumKeyTemplateWithTemplateParserXYZ()
+        {
+            var uriParser = new ODataUriParser(HardCodedTestModel.TestModel, new Uri("People/Fully.Qualified.Namespace.AllHaveDog()", UriKind.Relative))
+            {
+                EnableUriTemplateParsing = true
+            };
+
+            var path = uriParser.ParsePath();
+
+            // Verify
+            var operationSegment = path.LastSegment.As<OperationSegment>();
+            operationSegment.Identifier.Should().Be("Fully.Qualified.Namespace.AllHaveDog");
+            operationSegment.Operations.Count().Should().Be(1);
+            operationSegment.Operations.Any(_ => _.Namespace.Equals("Fully.Qualified.Namespace", StringComparison.Ordinal));
+            operationSegment.Operations.Any(_ => _.Name.Equals("AllHaveDog", StringComparison.Ordinal));
+        }
+
+        [Fact]
         public void ParseEnumKeyTemplateAsSegmentWithTemplateParser()
         {
             var uriParser = new ODataUriParser(HardCodedTestModel.TestModel, new Uri("http://host"), new Uri("http://host/Shapes/{enumKey}"))

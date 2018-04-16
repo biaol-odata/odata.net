@@ -102,12 +102,49 @@ namespace Microsoft.OData.UriParser
                 return false;
             }
 
+            if (IsFunctionActionSegment(segmentText))
+            {
+                return false;
+            }
+
             // Previously KeyAsSegment only allows single key, but we can also leverage related key finder to auto fill
             // missed key value from referential constraint information, which would be done in CreateKeySegment.
             // CreateKeySegment method will check whether key properties are missing after taking in related key values.
             keySegment = CreateKeySegment(previous, previousKeySegment, SegmentArgumentParser.FromSegment(segmentText, enableUriTemplateParsing), resolver);
 
             return true;
+        }
+
+        /// <summary>
+        /// Determines whether the segment text is a valid format of function or action.
+        /// </summary>
+        /// <param name="segmentText">The segment text.</param>
+        /// <returns>
+        ///   <c>true</c> if the segment text is a valid function or action format such as "theAction()"; otherwise, <c>false</c>.
+        /// </returns>
+        private static bool IsFunctionActionSegment(string segmentText)
+        {
+            int closingParenthesesBalance = 0;
+            bool hasParenthesis = false;
+            foreach (char c in segmentText.ToCharArray())
+            {
+                if (closingParenthesesBalance > 0)
+                {
+                    return false;
+                }
+
+                if (c == '(')
+                {
+                    hasParenthesis = true;
+                    --closingParenthesesBalance;
+                }
+                else if (c == ')')
+                {
+                    hasParenthesis = true;
+                    ++closingParenthesesBalance;
+                }
+            }
+            return hasParenthesis && closingParenthesesBalance == 0;
         }
 
         /// <summary>
