@@ -83,6 +83,44 @@ namespace Microsoft.OData.Tests.UriParser
             action.ShouldThrow<ODataException>().WithMessage(Strings.UriQueryExpressionParser_ExpressionExpected(0, ""));
         }
 
+        [Theory]
+        [InlineData("true", true)]
+        [InlineData("false", false)]
+        [InlineData("True", true)]
+        [InlineData("False", false)]
+        [InlineData("TrUe", true)]
+        [InlineData("FaLsE", false)]
+        public void QueryOptionCountWithCaseInsensitiveValueShouldWork(string value, bool? result)
+        {
+            var uriParser = new ODataQueryOptionParser(
+                HardCodedTestModel.TestModel,
+                HardCodedTestModel.GetPersonType(),
+                HardCodedTestModel.GetPeopleSet(),
+                new Dictionary<string, string>(){{"$count"   , value}})
+            {
+                Resolver = new ODataUriResolver { EnableCaseInsensitive = true }
+            };
+
+            uriParser.ParseCount().Should().Be(result);
+        }
+
+        [Theory]
+        [InlineData("True")]
+        [InlineData("False")]
+        [InlineData("TrUe")]
+        [InlineData("FaLsE")]
+        public void QueryOptionCountWithMixedCaseValueShouldThrow(string value)
+        {
+            var uriParser = new ODataQueryOptionParser(
+                HardCodedTestModel.TestModel,
+                HardCodedTestModel.GetPersonType(),
+                HardCodedTestModel.GetPeopleSet(),
+                new Dictionary<string, string>(){{"$count"   , value}});
+
+            Action action = () => uriParser.ParseCount();
+            action.ShouldThrow<ODataException>().WithMessage(Strings.ODataUriParser_InvalidCount(value));
+        }
+
         [Fact]
         public void QueryOptionWithNullValueShouldWork()
         {

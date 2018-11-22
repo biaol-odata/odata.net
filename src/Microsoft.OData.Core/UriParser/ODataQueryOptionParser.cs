@@ -676,6 +676,21 @@ namespace Microsoft.OData.UriParser
             else if (list.Count == 1)
             {
                 value = list.First().Value;
+
+                if (isCaseInsensitiveEnabled)
+                {
+                    // Use ToUpperInvariant to avoid CA1308.
+                    switch (value.ToUpperInvariant())
+                    {
+                        case "TRUE":
+                            value = ExpressionConstants.KeywordTrue;
+                            break;
+                        case "FALSE":
+                            value = ExpressionConstants.KeywordFalse;
+                            break;
+                    }
+                }
+
                 return true;
             }
 
